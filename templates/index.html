@@ -5,38 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Hue Adjustment</title>
     <style>
-        #image-container {
-            margin-top: 20px;
-        }
+        body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+    background-color: #000000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container styling */
+#image-container {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+}
+#colors {
+    margin-top: 20px;
+    max-width: fit-content;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
+    align-items: center;
+}
+
+#color-selector-container {
+    margin-bottom: 10px;
+}
+
+#slider-container {
+    margin-bottom: 10px;
+}
+
+#color-select {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: red; /* Default color */
+
+}
+
+#color-select:focus {
+    outline: none;
+
+}
+
+#color-select option {
+    color: white;
+    background-color: black; /* Default color */
+}
+
+#hue-slider {
+    width: 200px;
+    margin-left:-50px;
+    color: white;
+}
+
+#slider-value {
+    color: white; /* Make the text white */;
+}
+
+#image-upload {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+/* File input styling */
+.custom-file-upload {
+    
+    margin: 10px;
+    background-color: rgb(54, 173, 54);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.custom-file-upload:hover {
+    box-shadow: #ccc 0px 0px 10px inset;
+    box-shadow: #ccc 0px 0px 10px;
+}
+
+
+
+/* Refresh button styling */
+#switch-button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#switch-button:hover {
+    background-color: #0056b3;
+}
+#processed-image {
+    max-width: 500px;; /* Initial small size */
+    min-height: 300px; /* Adjust as needed */
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: width 0.5s; /* Smooth transition */
+    cursor: pointer;
+    display: none; /* Hide processed image initially */
+}
+
+#test-image {
+    max-width: 500px; /* Initial large size */
+    min-width: 300px;
+    min-height: 300px; /* Adjust as needed */
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: width 0.5s; /* Smooth transition */
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
+    <label for="image-upload" class="custom-file-upload">Upload Image</label>
     <input type="file" id="image-upload" accept="image/*">
+    <div id="image-container">
+        <img id="processed-image" src="#" alt="Processed Image">
+        <img id="test-image" src="#" alt="test Image">
+    </div>
+    <div id="colors">
     <div id="color-selector">
         <label for="color-select">Select Color:</label>
         <select id="color-select">
             <option value="red">Red</option>
             <option value="green">Green</option>
             <option value="blue">Blue</option>
-            <!-- Add more color options as needed -->
-        </select>
-    </div>
-    <div id="slider-container">
-        <label for="hue-slider">Hue Percentage:</label>
-        <input type="range" id="hue-slider" min="0" max="100" value="0">
-        <span id="slider-value">0</span>
-    </div>
-    <div id="image-container">
-        <img id="processed-image" src="#" alt="Processed Image">
-        <img id="test-image" src="#" alt="test Image">
-    </div>
-    <button id="refresh-button">Refresh Image</button>
+            <option value="yellow">Yellow</option>
+            <option value="purple">Purple</option>
+            <option value="orange">Orange</option>
+            <option value="magenta">Magenta</option>
+            <option value="cyan">Cyan</option>
+            <option value="black">Black</option>
+            <option value="white">White</option>
+
+                <!-- Add more color options as needed -->
+            </select>
+        </div>
+        <div id="slider-container">
+            <label for="hue-slider">Hue Percentage:</label>
+            <input type="range" id="hue-slider" min="0" max="100" value="0">
+            <span id="slider-value">0</span>
+        </div>
+        </div>
+    <button id="switch-button">original/edited</button>
 
     <script>
+        document.getElementById('switch-button').addEventListener('click', function() {
+            const processedImage = document.getElementById('processed-image');
+            const testImage = document.getElementById('test-image');
+
+            // Toggle visibility by changing the style.display property
+            if (processedImage.style.display === 'none') {
+                processedImage.style.display = 'inline'; // Show processed image
+                testImage.style.display = 'none'; // Hide test image
+            } else {
+                processedImage.style.display = 'none'; // Hide processed image
+                testImage.style.display = 'inline'; // Show test image
+            }
+            console.log('Images switched');
+        });
+
+        document.getElementById('color-select').addEventListener('input', function() {
+            const selectedColor = document.getElementById('color-select').value;
+        // Change color of color selector
+        document.getElementById('color-select').style.backgroundColor = selectedColor;
+        // Change color of slider value
+        document.getElementById('slider_value').style.color = selectedColor;
+        console.log('Color changed:', selectedColor);
+        });
+
         var colorSliderDict = {
             red: 0,
             green: 0,
-            blue: 0
+            blue: 0,
+            yellow: 0,
+            purple: 0,
+            orange: 0,
+            magenta: 0,
+            cyan: 0,
+            black: 0,
+            white: 0
         };
 
         document.getElementById('image-upload').addEventListener('change', function(event) {
@@ -50,7 +222,23 @@
         console.log('Slider value:', 0);
         console.log('Color:', 'red');
         console.log('Processed image filename:', '');
-
+        colorSliderDict = {
+            red: 0,
+            green: 0,
+            blue: 0,
+            yellow: 0,
+            purple: 0,
+            orange: 0,
+            magenta: 0,
+            cyan: 0,
+            black: 0,
+            white: 0
+        };
+        // set color select value to red
+        document.getElementById('color-select').value = 'red';
+        document.getElementById('color-select').style.backgroundColor = 'red';
+        document.getElementById('slider-value').textContent = 0;
+        document.getElementById('hue-slider').value = 0;
         fetch('/process_image', {
             method: 'POST',
             body: formData
@@ -64,16 +252,17 @@
         .then(data => {
             const processedImageURL = data.imagePath; // Assuming server responds with image path
             document.getElementById('processed-image').src = processedImageURL;
+            document.getElementById('test-image').src = processedImageURL;
         })
         .catch(error => console.error('There was a problem with the fetch operation:', error));
     });
 
-    document.getElementById('refresh-button').addEventListener('click', function() {
-        var color = document.getElementById('color-select').value;
-        var newValue = document.getElementById('hue-slider').value; 
-        var processedImageFilename = document.getElementById('processed-image').src.split('/').pop();
-        updateProcessedImage(document.getElementById('image-upload').files[0], newValue, color, processedImageFilename);
-    });
+    // document.getElementById('refresh-button').addEventListener('click', function() {
+    //     var color = document.getElementById('color-select').value;
+    //     var newValue = document.getElementById('hue-slider').value; 
+    //     var processedImageFilename = document.getElementById('processed-image').src.split('/').pop();
+    //     updateProcessedImage(document.getElementById('image-upload').files[0], newValue, color, processedImageFilename);
+    // });
 
     document.getElementById('color-select').addEventListener('change', function(event) {
         document.getElementById('hue-slider').value = colorSliderDict[event.target.value];
@@ -81,10 +270,13 @@
     });
 
     document.getElementById('hue-slider').addEventListener('input', function(event) {
+        
         var color = document.getElementById('color-select').value;
         var newValue = event.target.value;
         var value = newValue - colorSliderDict[color];
+        console.log('Value:', newValue);
         document.getElementById('slider-value').textContent = newValue;
+
         colorSliderDict[color] = newValue;
         clearTimeout(timeout);
         var timeout = setTimeout(function() {
@@ -97,17 +289,6 @@
             console.log('Color:', color);
             console.log('Processed image filename:', processedImageFilename);
         }, 500);
-        // // Send AJAX request to update the processed image with slider value and color select value
-        // var color = document.getElementById('color-select').value;
-        // var processedImageFilename = document.getElementById('processed-image').src.split('/').pop();
-        // updateProcessedImage(null, value, color, processedImageFilename); // Passing null for image data
-
-        // console.log('Slider value:', value);
-        // console.log('Color:', color);
-        // console.log('Processed image filename:', processedImageFilename);
-
-        // // Store the slider value to localStorage
-        // storeDataToLocalStorage(oldValue, newValue, color, processedImageFilename);
     });
 
     function updateProcessedImage(imageData, sliderValue, colorValue, processedImageFilename) {

@@ -12,12 +12,31 @@ PROCESSED_FOLDER = 'processed'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
 
+MAX_FILE_AGE_DAYS = 1
+MAX_FILES_TO_KEEP = 1
+
+def cleanup_files(folder):
+    files = os.listdir(folder)
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(folder, x)))
+    files_to_delete = files[:-MAX_FILES_TO_KEEP] if len(files) > MAX_FILES_TO_KEEP else []
+    for file_name in files_to_delete:
+        file_path = os.path.join(folder, file_name)
+        os.remove(file_path)
+
+def delete_old_files():
+    cleanup_files(app.config['UPLOAD_FOLDER'])
+    cleanup_files(app.config['PROCESSED_FOLDER'])
+
+
 @app.route('/')
 def index():
     return render_template('./index.html')
 
 @app.route('/process_image', methods=['POST'])
 def process_image():
+    # Delete old files
+    delete_old_files()
+    
     if 'image' in request.files:
         # Get uploaded image
         file = request.files['image']
