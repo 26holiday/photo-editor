@@ -33,8 +33,11 @@
     <button id="refresh-button">Refresh Image</button>
 
     <script>
-    var oldValue = 0;
-    var newValue = 0;
+        var colorSliderDict = {
+            red: 0,
+            green: 0,
+            blue: 0
+        };
 
         document.getElementById('image-upload').addEventListener('change', function(event) {
         const file = event.target.files[0];
@@ -72,11 +75,17 @@
         updateProcessedImage(document.getElementById('image-upload').files[0], newValue, color, processedImageFilename);
     });
 
+    document.getElementById('color-select').addEventListener('change', function(event) {
+        document.getElementById('hue-slider').value = colorSliderDict[event.target.value];
+        document.getElementById('slider-value').textContent = colorSliderDict[event.target.value];
+    });
+
     document.getElementById('hue-slider').addEventListener('input', function(event) {
-        newValue = event.target.value;
-        var value = newValue - oldValue;
+        var color = document.getElementById('color-select').value;
+        var newValue = event.target.value;
+        var value = newValue - colorSliderDict[color];
         document.getElementById('slider-value').textContent = newValue;
-        oldValue = newValue;
+        colorSliderDict[color] = newValue;
         clearTimeout(timeout);
         var timeout = setTimeout(function() {
             // Send AJAX request to update the processed image with slider value and color select value
