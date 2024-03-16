@@ -71,6 +71,7 @@ def process_image():
 
     # Save processed image
     cv2.imwrite(processed_image_path, processed_image)
+    
 
     return jsonify({'imagePath': processed_image_path})
 

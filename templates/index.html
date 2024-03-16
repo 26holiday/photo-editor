@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Hue Adjustment</title>
+
+<!-- --------------------------------------------CSS------------------------------------------- -->
     <style>
         body {
     font-family: Arial, sans-serif;
@@ -140,6 +142,9 @@
 
     </style>
 </head>
+
+<!-- ---------------------------------------HTML--------------------------------------------- -->
+
 <body>
     <label for="image-upload" class="custom-file-upload">Upload Image</label>
     <input type="file" id="image-upload" accept="image/*">
@@ -167,27 +172,34 @@
         </div>
         <div id="slider-container">
             <label for="hue-slider">Hue Percentage:</label>
-            <input type="range" id="hue-slider" min="0" max="100" value="0">
+            <input type="range" id="hue-slider" min="-100" max="100" value="0">
             <span id="slider-value">0</span>
         </div>
         </div>
     <button id="switch-button">original/edited</button>
 
+
+    
+<!-- ---------------------------------------JAVASCRIPT----------------------------------------------- -->
     <script>
         document.getElementById('switch-button').addEventListener('click', function() {
             const processedImage = document.getElementById('processed-image');
             const testImage = document.getElementById('test-image');
+            const switchButton = document.getElementById('switch-button');
 
             // Toggle visibility by changing the style.display property
             if (processedImage.style.display === 'none') {
                 processedImage.style.display = 'inline'; // Show processed image
                 testImage.style.display = 'none'; // Hide test image
+                switchButton.textContent = 'Original'; // Change button text to 'Original'
             } else {
                 processedImage.style.display = 'none'; // Hide processed image
                 testImage.style.display = 'inline'; // Show test image
+                switchButton.textContent = 'Edited'; // Change button text to 'Edited'
             }
             console.log('Images switched');
         });
+
 
         document.getElementById('color-select').addEventListener('input', function() {
             const selectedColor = document.getElementById('color-select').value;
@@ -269,8 +281,7 @@
         document.getElementById('slider-value').textContent = colorSliderDict[event.target.value];
     });
 
-    document.getElementById('hue-slider').addEventListener('input', function(event) {
-        
+    document.getElementById('hue-slider').addEventListener('mouseup', function(event) {
         var color = document.getElementById('color-select').value;
         var newValue = event.target.value;
         var value = newValue - colorSliderDict[color];
@@ -278,17 +289,24 @@
         document.getElementById('slider-value').textContent = newValue;
 
         colorSliderDict[color] = newValue;
-        clearTimeout(timeout);
-        var timeout = setTimeout(function() {
-            // Send AJAX request to update the processed image with slider value and color select value
-            var color = document.getElementById('color-select').value;
-            var processedImageFilename = document.getElementById('processed-image').src.split('/').pop();
-            updateProcessedImage(null, value, color, processedImageFilename); // Passing null for image data
 
-            console.log('Slider value:', value);
-            console.log('Color:', color);
-            console.log('Processed image filename:', processedImageFilename);
-        }, 500);
+        // Send AJAX request to update the processed image with slider value and color select value
+        var processedImageFilename = document.getElementById('processed-image').src.split('/').pop();
+        updateProcessedImage(null, value, color, processedImageFilename); // Passing null for image data
+
+        // only doing this bcs switch button doesnt work first time bcs processedImage.style.display is not null first time
+        const processedImage = document.getElementById('processed-image');
+        const testImage = document.getElementById('test-image');
+        const switchButton = document.getElementById('switch-button');
+        if(processedImage.style.display !== 'none'){
+            processedImage.style.display = 'none'; // Hide processed image
+            testImage.style.display = 'inline'; // Show test image
+            switchButton.textContent = 'Edited';
+        }
+
+        console.log('Slider value:', value);
+        console.log('Color:', color);
+        console.log('Processed image filename:', processedImageFilename);
     });
 
     function updateProcessedImage(imageData, sliderValue, colorValue, processedImageFilename) {
